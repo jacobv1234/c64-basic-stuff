@@ -56,6 +56,28 @@ def generate():
     location = int(input('Enter location in BASIC area to be stored (33-255): '))
     line_data = int(input('Enter starting line number of data (0-32746): '))
     line_code = int(input('Enter starting line of load code (0-32767): '))
+    
+    colour = int(input('''
+Select a colour:
+0 - Black
+1 - White
+2 - Red
+3 - Cyan
+4 - Purple
+5 - Green
+6 - Blue
+7 - Yellow
+8 - Orange
+9 - Brown
+10 - Pink
+11 - Dark Grey
+12 - Grey
+13 - Light Green
+14 - Light Blue
+15 - Light Grey
+
+>>> '''))
+    
     file = open('GeneratedBASIC.txt','x')
     line1 = str(line_code) + ' rem spritedata\n'
     line_code += 1
@@ -63,11 +85,19 @@ def generate():
     line_code += 1
     line3 = str(line_code) + ' poke 64,' + str(line_data % 256)+'\n'
     line_code += 1
-    line4 = str(line_code) + ' for i=0to62:read a:poke ' + str(location) + '+i,a:next\n'
+    line4 = str(line_code) + ' for i=0to62:read a:poke ' + str(location*64) + '+i,a:next\n'
     line_code += 1
     line5 = str(line_code) + ' poke ' + str(2040 + int(spritenum)) + ',' + str(location)+'\n'
+    line_code += 1
+    line6 = str(line_code) + ' poke ' + str(53287 + spritenum) + ',' + str(colour) + '\n'
+    line_code += 1
+    line7 = str(line_code) + ' poke 53269,peek(53269)or' + str(2**spritenum) + '\n'
+    line_code += 1
+    line8 = str(line_code) + ' poke ' + str(53248 + (2*spritenum)) +',64\n'
+    line_code += 1
+    line9 = str(line_code) + ' poke ' + str(53249 + (2*spritenum)) +',64\n'
 
-    file.writelines([line1,line2,line3,line4,line5])
+    file.writelines([line1,line2,line3,line4,line5,line6,line7,line8,line9])
 
     for i in range(0,63,3):
         linenumber = int(line_data + i/3)
