@@ -77,34 +77,62 @@ Select a colour:
 15 - Light Grey
 
 >>> '''))
+
+    ext_x = int(input('Double width? (0/1): '))
+    ext_y = int(input('Double height? (0/1): '))
+    clr_home = int(input('Clear screen? (0/1): '))
+    name = input('Name your image: ')
     
-    file = open('GeneratedBASIC.txt','x')
-    line1 = str(line_code) + ' rem spritedata\n'
-    line_code += 1
-    line2 = str(line_code) + ' poke 63,' + str(line_data // 256)+'\n'
-    line_code += 1
-    line3 = str(line_code) + ' poke 64,' + str(line_data % 256)+'\n'
-    line_code += 1
-    line4 = str(line_code) + ' for i=0to62:read a:poke ' + str(location*64) + '+i,a:next\n'
-    line_code += 1
-    line5 = str(line_code) + ' poke ' + str(2040 + int(spritenum)) + ',' + str(location)+'\n'
-    line_code += 1
-    line6 = str(line_code) + ' poke ' + str(53287 + spritenum) + ',' + str(colour) + '\n'
-    line_code += 1
-    line7 = str(line_code) + ' poke 53269,peek(53269)or' + str(2**spritenum) + '\n'
-    line_code += 1
-    line8 = str(line_code) + ' poke ' + str(53248 + (2*spritenum)) +',64\n'
-    line_code += 1
-    line9 = str(line_code) + ' poke ' + str(53249 + (2*spritenum)) +',64\n'
+    for i in range(100):
+        if i != 0:
+            filename = 'GeneratedBASIC (' +str(i)+ ').txt'
+        else:
+            filename = 'GeneratedBASIC.txt'
+        try:
+            file = open(filename,'x')
+        except:
+            continue
+        break
 
-    file.writelines([line1,line2,line3,line4,line5,line6,line7,line8,line9])
+    lines = []
 
-    for i in range(0,63,3):
-        linenumber = int(line_data + i/3)
+    lines.append(str(line_code) + ' rem load '+name+'\n')
+    line_code += 1
+    if clr_home == 1:
+        lines.append(str(line_code) + 'print chr$(147)\n')
+        line_code += 1
+    lines.append(str(line_code) + ' poke 63,' + str(line_data // 256)+'\n')
+    line_code += 1
+    lines.append(str(line_code) + ' poke 64,' + str(line_data % 256)+'\n')
+    line_code += 1
+    lines.append(str(line_code) + ' for i=0to62:read a:poke ' + str(location*64) + '+i,a:next\n')
+    line_code += 1
+    lines.append(str(line_code) + ' poke ' + str(2040 + int(spritenum)) + ',' + str(location)+'\n')
+    line_code += 1
+    lines.append(str(line_code) + ' poke ' + str(53287 + spritenum) + ',' + str(colour) + '\n')
+    line_code += 1
+    if ext_x == 1:
+        lines.append(str(line_code) + ' poke 53277,peek(53277)or' + str(2**spritenum) + '\n')
+        line_code += 1
+    if ext_y == 1:
+        lines.append(str(line_code) + ' poke 53271,peek(53271)or' + str(2**spritenum) + '\n')
+        line_code += 1
+    lines.append(str(line_code) + ' poke 53269,peek(53269)or' + str(2**spritenum) + '\n')
+    line_code += 1
+    lines.append(str(line_code) + ' poke ' + str(53248 + (2*spritenum)) +',24\n')
+    line_code += 1
+    lines.append(str(line_code) + ' poke ' + str(53249 + (2*spritenum)) +',50\n')
+
+    file.writelines(lines)
+
+    file.write(str(line_data) + ' rem ' + name + ' data\n')
+    line_data += 1
+    for i in range(0,63,7):
+        linenumber = int(line_data + i/7)
         codeline = str(linenumber) + ' data '
-        for j in range(3):
+        for j in range(7):
             codeline += str(values[i+j])
-            if j != 2:
+            if j != 6:
                 codeline += ', '
         codeline += '\n'
         file.write(codeline)
